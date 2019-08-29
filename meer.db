@@ -1,0 +1,5156 @@
+record(calc, "SEQ")
+{
+    field(VAL,  "0x15AA")
+    field(CALC, "(VAL+1)&0xffff")
+}
+
+record(bo, "$(P)EmergencyStop")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto sendCommand($(ADDR),ES) $(PORT)")
+}
+
+record(bo, "$(P)Reset")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto sendCommand($(ADDR),RS) $(PORT)")
+}
+
+record(ao, "$(P)ChangeSpeed")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setSpeed($(ADDR),CS) $(PORT)")
+}
+
+record(seq, "$(P)ChangeSpeedSEQ")
+{
+	field(DO1,  "921600")
+	field(LNK1, "$(P)ChangeSpeed.VAL PP NMS")
+	field(DLY1, "0")
+	field(DO2,  "14")
+	field(LNK2, "$(ASYNRECORD).BAUD")
+	field(DLY2, "1.0")
+	field(DO3,  "7")
+	field(LNK3,  "$(P)FirmwareID_RBV.SCAN")
+	field(DLY3,  "1.0")
+}
+
+record(stringin, "$(P)FirmwareID_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFirmwareID($(ADDR),?IF) $(PORT)")
+	field(SCAN, "$(SCANSLOW)")
+} 
+
+record(ai, "$(P)DeviceType_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006401) $(PORT)")
+	field(SCAN, "$(SCANSLOW)")
+}
+
+record(ai, "$(P)HardwareVersion_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006501) $(PORT)")
+	field(ASLO, "0.01")
+	field(SCAN, "$(SCANSLOW)")
+}
+
+record(ai, "$(P)SerialNumber_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006601) $(PORT)")
+	field(SCAN, "$(SCANSLOW)")
+}
+
+record(ai, "$(P)FirmwareVersion_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006701) $(PORT)")
+	field(ASLO, "0.01")
+	field(SCAN, "$(SCANSLOW)")
+}
+
+record(mbbi, "$(P)DeviceStatus_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006801) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Init")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Ready")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Run")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Error")
+	field(THSV, "MAJOR")
+	field(FRVL, "4")
+	field(FRST, "Bootloader")
+	field(FRSV, "MINOR")
+	field(FVVL, "5")
+	field(FVST, "Reset Imminent")
+	field(FVSV, "MINOR")
+	field(SCAN, "$(SCAN)")
+}
+
+record(ai, "$(P)ErrorNumber_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006901) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+
+record(ai, "$(P)ErrorInstance_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006A01) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+
+record(ai, "$(P)ErrorParameter_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006B01) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbi, "$(P)SaveFlash_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006C01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Enabled")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Disabled")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbi, "$(P)SaveFlashStatus_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),006D01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Complete")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "In progress")
+	field(ONSV, "MINOR")
+	field(TWVL, "2")
+	field(TWST, "Disabled")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+# Monitor (read only) 
+record(ai, "$(P)Ch1:ObjectTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03E801) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:ObjectTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ObjectTemp_RBVRaw.VAL CP NMS")
+	field(HOPR, "50")
+	field(LOPR, "10")
+	field(EGU,  "C")
+}
+	
+record(ai, "$(P)Ch2:ObjectTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03E802) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ObjectTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ObjectTemp_RBVRaw.VAL CP NMS")
+	field(HOPR, "50")
+	field(LOPR, "10")
+	field(EGU,  "C")
+}
+
+record(ai, "$(P)Ch1:SinkTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03E901) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:SinkTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03E902) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TargetObjectTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03F201) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:TargetObjectTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TargetObjectTemp_RBVRaw.VAL CP NMS")
+	field(HOPR, "50")
+	field(LOPR, "10")
+	field(EGU,  "C")
+}
+
+record(ai, "$(P)Ch2:TargetObjectTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03F202) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TargetObjectTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TargetObjectTemp_RBVRaw.VAL CP NMS")
+	field(HOPR, "50")
+	field(LOPR, "10")
+	field(EGU,  "C")
+}
+
+record(ai, "$(P)Ch1:NominalObjectTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03F301) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:NominalObjectTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:NominalObjectTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:NominalObjectTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03F302) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:NominalObjectTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:NominalObjectTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:ThermalPowerModelCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03F401) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:ThermalPowerModelCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ThermalPowerModelCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:ThermalPowerModelCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03F402) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ThermalPowerModelCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ThermalPowerModelCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:OutputCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03FC01) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:OutputCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:OutputCurrent_RBVRaw.VAL CP NMS")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(EGU,  "A")
+}
+
+record(ai, "$(P)Ch2:OutputCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03FC02) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:OutputCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:OutputCurrent_RBVRaw.VAL CP NMS")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(EGU,  "A")
+}
+
+record(ai, "$(P)Ch1:OutputVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03FD01) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:OutputVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:OutputVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:OutputVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),03FD02) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:OutputVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:OutputVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:PidLowerLimit_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),040601) $(PORT)")
+	field(EGU,  "%")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:PidLowerLimit_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:PidLowerLimit_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:PidLowerLimit_RBVRaw")
+{	
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),040602) $(PORT)")
+	field(EGU,  "%")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:PidLowerLimit_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:PidLowerLimit_RBVRaw.VAL CP NMS")
+}
+
+
+record(ai, "$(P)Ch1:PidUpperLimit_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),040701) $(PORT)")
+	field(EGU,  "%")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:PidUpperLimit_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:PidUpperLimit_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:PidUpperLimit_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),040702) $(PORT)")
+	field(EGU,  "%")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:PidUpperLimit_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:PidUpperLimit_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:PidControlVariable_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),040801) $(PORT)")
+	field(EGU,  "%")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:PidControlVariable_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:PidControlVariable_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:PidControlVariable_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),040802) $(PORT)")
+	field(EGU,  "%")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:PidControlVariable_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:PidControlVariable_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:ObjectSensorADC_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041001) $(PORT)")
+	field(EGU,  "")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:ObjectSensorADC_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ObjectSensorADC_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:ObjectSensorADC_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041002) $(PORT)")
+	field(EGU,  "")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ObjectSensorADC_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ObjectSensorADC_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:ObjectDiffVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041601) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:ObjectDiffVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ObjectDiffVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:ObjectDiffVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041602) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ObjectDiffVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ObjectDiffVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:ObjectSensorResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041201) $(PORT)")
+	field(EGU,  "Ohm")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:ObjectSensorResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ObjectSensorResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:ObjectSensorResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041202) $(PORT)")
+	field(EGU,  "Ohm")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ObjectSensorResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ObjectSensorResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:ObjectSensorTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041501) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:ObjectSensorTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ObjectSensorTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:ObjectSensorTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041502) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ObjectSensorTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ObjectSensorTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SinkSensorADC_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041101) $(PORT)")
+	field(EGU,  "")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:SinkSensorADC_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkSensorADC_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkSensorADC_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041102) $(PORT)")
+	field(EGU,  "")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkSensorADC_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkSensorADC_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SinkSensorResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041301) $(PORT)")
+	field(EGU,  "Ohm")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:SinkSensorResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkSensorResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkSensorResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041302) $(PORT)")
+	field(EGU,  "Ohm")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkSensorResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkSensorResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SinkSensorTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041401) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:SinkSensorTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkSensorTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkSensorTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),041402) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkSensorTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkSensorTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)DriverInputVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),042401) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)DriverInputVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)DriverInputVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)MediumInternalSupply_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),042501) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)MediumInternalSupply_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)MediumInternalSupply_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)3VSupply_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),042601) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)3VSupply_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)3VSupply_RBVRaw.VAL CP NMS")
+}
+
+
+record(ai, "$(P)DeviceTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),042701) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)DeviceTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)DeviceTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)MaxDeviceTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),045601) $(PORT)")
+	field(EGU,  "C")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)MaxDeviceTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)MaxDeviceTemp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)MaxOutputCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),045701) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)MaxOutputCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)MaxOutputCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)ActualOutputCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),044201) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)ActualOutputCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)ActualOutputCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(mbbi, "$(P)Ch1:TempStability_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),04B001) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Inactive")
+	field(ZRSV, "MINOR")
+	field(ONVL, "1")
+	field(ONST, "Unstable")
+	field(ONSV, "MAJOR")
+	field(TWVL, "2")
+	field(TWST, "Stable")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbi, "$(P)Ch2:TempStability_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),04B002) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Inactive")
+	field(ZRSV, "MINOR")
+	field(ONVL, "1")
+	field(ONST, "Unstable")
+	field(ONSV, "MAJOR")
+	field(TWVL, "2")
+	field(TWST, "Stable")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+# Operation
+
+record(mbbi, "$(P)Ch1:InputSelection_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),07D001) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static Current/Voltage")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Live Current/Voltage")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Temperature Controller")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:InputSelection")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07D001) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static Current/Voltage")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Live Current/Voltage")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWSV, "NO_ALARM")
+	field(TWST, "Temperature Controller")
+}
+
+record(mbbi, "$(P)Ch2:InputSelection_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),07D002) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static Current/Voltage")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Live Current/Voltage")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Temperature Controller")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:InputSelection")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07D002) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static Current/Voltage")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Live Current/Voltage")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Temperature Controller")
+	field(TWSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch1:OutputStageEnable_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),07DA01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static OFF")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Static ON")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Live OFF/ON")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "HW Enable (GPIO)")
+	field(THSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:OutputStageEnable")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07DA01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static OFF")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Static ON")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Live OFF/ON")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "HW Enable (GPIO)")
+	field(THSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:OutputStageEnable_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),07DA02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static OFF")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Static ON")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Live OFF/ON")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "HW Enable (GPIO)")
+	field(THSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:OutputStageEnable")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07DA02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Static OFF")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Static ON")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Live OFF/ON")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "HW Enable (GPIO)")
+	field(THSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch1:SetCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07E401) $(PORT)")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SetCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SetCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SetCurrent")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(FLNK, "$(P)Ch1:SetCurrentFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SetCurrentFO")
+{
+	field(DOL,  "$(P)Ch1:SetCurrent.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SetCurrentRaw.VAL")
+	field(FLNK, "$(P)Ch1:SetCurrentRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SetCurrentRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07E401) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SetCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07E402) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SetCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SetCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SetCurrent")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(FLNK, "$(P)Ch2:SetCurrentFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SetCurrentFO")
+{
+	field(DOL,  "$(P)Ch2:SetCurrent.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SetCurrentRaw.VAL")
+	field(FLNK, "$(P)Ch2:SetCurrentRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SetCurrentRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07E402) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:SetVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07E501) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SetVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SetVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SetVoltage")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(HOPR, "21")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:SetVoltageFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SetVoltageFO")
+{
+	field(DOL,  "$(P)Ch1:SetVoltage.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SetVoltageRaw.VAL")
+	field(FLNK, "$(P)Ch1:SetVoltageRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SetVoltageRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07E501) $(PORT)")
+	field(EGU,  "V")
+}
+
+
+record(ai, "$(P)Ch2:SetVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07E502) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SetVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SetVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SetVoltage")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(HOPR, "21")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:SetVoltageFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SetVoltageFO")
+{
+	field(DOL,  "$(P)Ch2:SetVoltage.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SetVoltageRaw.VAL")
+	field(FLNK, "$(P)Ch2:SetVoltageRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SetVoltageRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07E502) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:CurrentLimitation_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07EE01) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:CurrentLimitation_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:CurrentLimitation_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:CurrentLimitation")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "A")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(FLNK, "$(P)Ch1:CurrentLimitationFO.PROC")
+}
+
+record(dfanout, "$(P)Ch1:CurrentLimitationFO")
+{
+	field(DOL,  "$(P)Ch1:CurrentLimitation.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:CurrentLimitationRaw.VAL")
+	field(FLNK, "$(P)Ch1:CurrentLimitationRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:CurrentLimitationRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07EE01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:CurrentLimitation_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07EE02) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:CurrentLimitation_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:CurrentLimitation_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:CurrentLimitation")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "A")
+	field(HOPR, "10")
+	field(LOPR, "-10")
+	field(FLNK, "$(P)Ch2:CurrentLimitationFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:CurrentLimitationFO")
+{
+	field(DOL,  "$(P)Ch2:CurrentLimitation.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:CurrentLimitationRaw.VAL")
+	field(FLNK, "$(P)Ch2:CurrentLimitationRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:CurrentLimitationRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07EE02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:VoltageLimitation_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07EF01) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:VoltageLimitation_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:VoltageLimitation_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:VoltageLimitation")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(HOPR, "21")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:VoltageLimitationFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:VoltageLimitationFO")
+{
+	field(DOL,  "$(P)Ch1:VoltageLimitation.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:VoltageLimitationRaw.VAL")
+	field(FLNK, "$(P)Ch1:VoltageLimitationRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:VoltageLimitationRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07EF01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:VoltageLimitation_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07EF02) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:VoltageLimitation_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:VoltageLimitation_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:VoltageLimitation")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(HOPR, "21")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:VoltageLimitationFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:VoltageLimitationFO")
+{
+	field(DOL,  "$(P)Ch2:VoltageLimitation.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:VoltageLimitationRaw.VAL")
+	field(FLNK, "$(P)Ch2:VoltageLimitationRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:VoltageLimitationRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07EF02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:CurrentErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07F001) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:CurrentErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:CurrentErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:CurrentErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(HOPR, "14")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:CurrentErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:CurrentErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch1:CurrentErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:CurrentErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch1:CurrentErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:CurrentErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07F001) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:CurrentErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07F002) $(PORT)")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:CurrentErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:CurrentErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:CurrentErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "A")
+	field(PREC, "3")
+	field(HOPR, "14")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:CurrentErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:CurrentErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch2:CurrentErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:CurrentErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch2:CurrentErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:CurrentErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07F002) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:VoltageErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07F101) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:VoltageErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:VoltageErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:VoltageErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(HOPR, "25")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:VoltageErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:VoltageErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch1:VoltageErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:VoltageErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch1:VoltageErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:VoltageErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07F101) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:VoltageErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),07F102) $(PORT)")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:VoltageErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:VoltageErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:VoltageErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "V")
+	field(PREC, "3")
+	field(HOPR, "25")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:VoltageErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:VoltageErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch2:VoltageErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:VoltageErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch2:VoltageErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:VoltageErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07F102) $(PORT)")
+}
+
+record(mbbi, "$(P)GeneralOperatingMode_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),07F801) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Single (Independent)")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Parallel Indvdl Load")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Parallel Common Load")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)GeneralOperatingMode")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),07F801) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Single (Independent)")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Parallel Indvdl Load")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Parallel Common Load")
+	field(TWSV, "NO_ALARM")
+}
+
+record(ai, "$(P)DeviceAddress_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),080301) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(ao, "$(P)DeviceAddress")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080301) $(PORT)")
+}
+
+record(ai, "$(P)BaseBaudRate1_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),080201) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(ao, "$(P)BaseBaudRate1")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080201) $(PORT)")
+	field(HOPR, "1000000")
+	field(LOPR, "4800")
+	field(VAL,  "57600")
+}
+
+record(dfanout, "$(P)BaseBaud1Fanout")
+{
+	field(DOL,  "$(P)BaseBaudRate1.VAL CP NMS")
+	field(OMSL, "closed_loop")
+	field(OUTA, "$(ASYNRECORD).LBAUD")
+}
+
+record(ai, "$(P)BaseBaudRate2_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),080202) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(ao, "$(P)BaseBaudRate2")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080202) $(PORT)")
+	field(HOPR, "1000000")
+	field(LOPR, "4800")
+}
+
+record(dfanout, "$(P)BaseBaud2Fanout")
+{
+	field(DOL,  "$(P)BaseBaudRate2.VAL CP NMS")
+	field(OMSL, "closed_loop")
+	field(OUTA, "$(ASYNRECORD).LBAUD")
+}
+
+record(ai, "$(P)ResponseDelay2_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),080402) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(ao, "$(P)ResponseDelay2")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080402) $(PORT)")
+	field(PREC, "3")
+	field(HOPR, "1000000")
+	field(LOPR, "0")
+}
+
+record(ai, "$(P)BaseBaudRate3_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),080203) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(ao, "$(P)BaseBaudRate3")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080203) $(PORT)")
+	field(HOPR, "1000000")
+	field(LOPR, "4800")
+}
+
+record(dfanout, "$(P)BaseBaud3Fanout")
+{
+	field(DOL,  "$(P)BaseBaudRate3.VAL CP NMS")
+	field(OMSL, "closed_loop")
+	field(OUTA, "$(ASYNRECORD).LBAUD")
+}
+
+record(ai, "$(P)ResponseDelay3_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),080403) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(ao, "$(P)ResponseDelay3")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080403) $(PORT)")
+	field(PREC, "3")
+	field(HOPR, "1000000")
+	field(LOPR, "0")
+}
+
+record(ai, "$(P)CommWatchdog_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),080C01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)CommWatchdog_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)CommWatchdog_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)CommWatchdog")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(HOPR, "600")
+	field(LOPR, "0.1")
+	field(FLNK, "$(P)CommWatchdogFO.VAL")
+}
+
+record(dfanout, "$(P)CommWatchdogFO")
+{
+	field(DOL,  "$(P)CommeWatchdog.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)CommWatchdogRaw.VAL")
+	field(FLNK, "$(P)CommWatchdogRaw.VAL")
+}
+
+record(ao, "$(P)CommWatchdogRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),080C01) $(PORT)")
+}
+
+# Tab: Temp Control
+record(sub, "$(P)Ch1:TargetObjectTemp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(FLNK, "$(P)Ch1:TargetObjectTempFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:TargetObjectTempFO")
+{
+	field(DOL,  "$(P)Ch1:TargetObjectTemp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:TargetObjectTempRaw.VAL")
+	field(FLNK, "$(P)Ch1:TargetObjectTempRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:TargetObjectTempRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BB801) $(PORT)")
+}
+
+record(sub, "$(P)Ch2:TargetObjectTemp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(FLNK, "$(P)Ch2:TargetObjectTempFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:TargetObjectTempFO")
+{
+	field(DOL,  "$(P)Ch2:TargetObjectTemp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:TargetObjectTempRaw.VAL")
+	field(FLNK, "$(P)Ch2:TargetObjectTempRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:TargetObjectTempRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BB802) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:CoarseTempRamp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BBB01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:CoarseTempRamp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:CoarseTempRamp_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:CoarseTempRamp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "C/s")
+	field(HOPR, "50")
+	field(LOPR, "1e-6")
+	field(PREC, "3")
+	field(FLNK, "$(P)Ch1:CoarseTempRampFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:CoarseTempRampFO")
+{
+	field(DOL,  "$(P)Ch1:CoarseTempRamp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:CoarseTempRampRaw.VAL")
+	field(FLNK, "$(P)Ch1:CoarseTempRampRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:CoarseTempRampRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BBB01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:CoarseTempRamp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BBB02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:CoarseTempRamp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:CoarseTempRamp_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:CoarseTempRamp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(EGU,  "C/s")
+	field(HOPR, "50")
+	field(LOPR, "1e-6")
+	field(PREC, "3")
+	field(FLNK, "$(P)Ch2:CoarseTempRampFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:CoarseTempRampFO")
+{
+	field(DOL,  "$(P)Ch2:CoarseTempRamp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:CoarseTempRampRaw.VAL")
+	field(FLNK, "$(P)Ch2:CoarseTempRampRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:CoarseTempRampRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BBB02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:ProximityWidth_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BBA01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:ProximityWidth_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:ProximityWidth_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:ProximityWidth")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "0.1")
+	field(FLNK, "$(P)Ch1:ProximityWidthFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:ProximityWidthFO")
+{
+	field(DOL,  "$(P)Ch1:ProximityWidth.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:ProximityWidthRaw.VAL")
+	field(FLNK, "$(P)Ch1:ProximityWidthRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:ProximityWidthRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BBA01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:ProximityWidth_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BBA02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:ProximityWidth_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:ProximityWidth_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:ProximityWidth")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "0.1")
+	field(FLNK, "$(P)Ch2:ProximityWidthFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:ProximityWidthFO")
+{
+	field(DOL,  "$(P)Ch2:ProximityWidth.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:ProximityWidthRaw.VAL")
+	field(FLNK, "$(P)Ch2:ProximityWidthRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:ProximityWidthRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BBA02) $(PORT)")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "0.1")
+}
+
+record(ai, "$(P)Ch1:Kp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC201) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:Kp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:Kp_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:Kp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "%/C")
+	field(HOPR, "10000")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:KpFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:KpFO")
+{
+	field(DOL,  "$(P)Ch1:Kp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:KpRaw.VAL")
+	field(FLNK, "$(P)Ch1:KpRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:KpRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC201) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:Kp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC202) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:Kp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:Kp_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:Kp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "%/C")
+	field(HOPR, "10000")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:KpFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:KpFO")
+{
+	field(DOL,  "$(P)Ch2:Kp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:KpRaw.VAL")
+	field(FLNK, "$(P)Ch2:KpRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:KpRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC202) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:Ti_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC301) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:Ti_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:Ti_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:Ti")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "10000")
+	field(LOPR, "0.0001")
+	field(FLNK, "$(P)Ch1:TiFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:TiFO")
+{
+	field(DOL,  "$(P)Ch1:Ti.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:TiRaw.VAL")
+	field(FLNK, "$(P)Ch1:TiRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:TiRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC301) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:Ti_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC302) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:Ti_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:Ti_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:Ti")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "10000")
+	field(LOPR, "0.0001")
+	field(FLNK, "$(P)Ch2:TiFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:TiFO")
+{
+	field(DOL,  "$(P)Ch2:Ti.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:TiRaw.VAL")
+	field(FLNK, "$(P)Ch2:TiRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:TiRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC302) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:Td_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC401) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:Td_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:Td_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:Td")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "10000")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:TdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:TdFO")
+{
+	field(DOL,  "$(P)Ch1:Td.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:TdRaw.VAL")
+	field(FLNK, "$(P)Ch1:TdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:TdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC401) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:Td_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC402) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:Td_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:Td_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:Td")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "10000")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:TdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:TdFO")
+{
+	field(DOL,  "$(P)Ch2:Td.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:TdRaw.VAL")
+	field(FLNK, "$(P)Ch2:TdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:TdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC402) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:DPartDamping_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC501) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:DPartDamping_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:DPartDamping_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:DPartDamping")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(HOPR, "1")
+	field(LOPR, "0")
+	field(EGU,  "s")
+	field(FLNK, "$(P)Ch1:DPartDampingFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:DPartDampingFO")
+{
+	field(DOL,  "$(P)Ch1:DPartDamping.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:DPartDampingRaw.VAL")
+	field(FLNK, "$(P)Ch1:DPartDampingRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:DPartDampingRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC501) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:DPartDamping_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BC502) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:DPartDamping_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:DPartDamping_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:DPartDamping")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(HOPR, "1")
+	field(LOPR, "0")
+	field(EGU,  "s")
+	field(FLNK, "$(P)Ch2:DPartDampingFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:DPartDampingFO")
+{
+	field(DOL,  "$(P)Ch2:DPartDamping.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:DPartDampingRaw.VAL")
+	field(FLNK, "$(P)Ch2:DPartDampingRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:DPartDampingRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BC502) $(PORT)")
+}
+
+record(mbbi, "$(P)Ch1:ModelizationThermalPowerReg_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),0BCC01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Peltier, Full Control")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Peltier, Heat - Cool Only")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Resistor, Heat Only")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:ModelizationThermalPowerReg")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BCC01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Peltier, Full Control")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Peltier, Heat - Cool Only")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Resistor, Heat Only")
+	field(TWSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:ModelizationThermalPowerReg_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),0BCC02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Peltier, Full Control")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Peltier, Heat - Cool Only")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Resistor, Heat Only")
+	field(TWSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:ModelizationThermalPowerReg")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BCC02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Peltier, Full Control")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Peltier, Heat - Cool Only")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "Resistor, Heat Only")
+	field(TWSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch1:MaxCurrentImax_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BD601) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:MaxCurrentImax_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:MaxCurrentImax_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:MaxCurrentImax")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "A")
+	field(HOPR, "1000")
+	field(LOPR, "0.1")
+	field(FLNK, "$(P)Ch1:MaxCurrentImaxFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:MaxCurrentImaxFO")
+{
+	field(DOL,  "$(P)Ch1:MaxCurrentImax.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:MaxCurrentImaxRaw.VAL")
+	field(FLNK, "$(P)Ch1:MaxCurrentImaxRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:MaxCurrentImaxRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BD601) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:MaxCurrentImax_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BD602) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:MaxCurrentImax_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:MaxCurrentImax_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:MaxCurrentImax")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "A")
+	field(HOPR, "1000")
+	field(LOPR, "0.1")
+	field(FLNK, "$(P)Ch2:MaxCurrentImaxFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:MaxCurrentImaxFO")
+{
+	field(DOL,  "$(P)Ch2:MaxCurrentImax.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:MaxCurrentImaxRaw.VAL")
+	field(FLNK, "$(P)Ch2:MaxCurrentImaxRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:MaxCurrentImaxRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BD602) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:dTmax_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BD901) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:dTmax_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:dTmax_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:dTmax")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "1")
+	field(FLNK, "$(P)Ch1:dTmaxFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:dTmaxFO")
+{
+	field(DOL,  "$(P)Ch1:dTmax.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:dTmaxRaw.VAL")
+	field(FLNK, "$(P)Ch1:dTmaxRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:dTmaxRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BD901) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:dTmax_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BD902) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:dTmax_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:dTmax_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:dTmax")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "1")
+	field(FLNK, "$(P)Ch2:dTmaxFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:dTmaxFO")
+{
+	field(DOL,  "$(P)Ch2:dTmax.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:dTmaxRaw.VAL")
+	field(FLNK, "$(P)Ch2:dTmaxRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:dTmaxRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BD902) $(PORT)")
+}
+
+record(mbbi, "$(P)Ch1:PositiveCurrentIs_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),0BDA01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Cooling")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Heating")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:PositiveCurrentIs")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BDA01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Cooling")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Heating")
+	field(ONSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:PositiveCurrentIs_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),0BDA02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Cooling")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Heating")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:PositiveCurrentIs")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BDA02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Cooling")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Heating")
+	field(ONSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch1:Resistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BE001) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:Resistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:Resistance_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:Resistance")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "Ohm")
+	field(HOPR, "10000")
+	field(LOPR, "0.001")
+	field(FLNK, "$(P)Ch1:ResistanceFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:ResistanceFO")
+{
+	field(DOL,  "$(P)Ch1:Resistance.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:ResistanceRaw.VAL")
+	field(FLNK, "$(P)Ch1:ResistanceRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:ResistanceRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BE001) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:Resistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BE002) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:Resistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:Resistance_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:Resistance")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "Ohm")
+	field(HOPR, "10000")
+	field(LOPR, "0.001")
+	field(FLNK, "$(P)Ch2:ResistanceFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:ResistanceFO")
+{
+	field(DOL,  "$(P)Ch2:Resistance.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:ResistanceRaw.VAL")
+	field(FLNK, "$(P)Ch2:ResistanceRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:ResistanceRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BE002) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:MaximalCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BE101) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:MaximalCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:MaximalCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:MaximalCurrent")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "A")
+	field(HOPR, "1000")
+	field(LOPR, "0.01")
+	field(FLNK, "$(P)Ch1:MaximalCurrentFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:MaximalCurrentFO")
+{
+	field(DOL,  "$(P)Ch1:MaximalCurrent.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:MaximalCurrentRaw.VAL")
+	field(FLNK, "$(P)Ch1:MaximalCurrentRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:MaximalCurrentRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BE101) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:MaximalCurrent_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BE102) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:MaximalCurrent_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:MaximalCurrent_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:MaximalCurrent")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "A")
+	field(HOPR, "1000")
+	field(LOPR, "0.01")
+	field(FLNK, "$(P)Ch2:MaximalCurrentFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:MaximalCurrentFO")
+{
+	field(DOL,  "$(P)Ch2:MaximalCurrent.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:MaximalCurrentRaw.VAL")
+	field(FLNK, "$(P)Ch2:MaximalCurrentRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:MaximalCurrentRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BE102) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:UpperBoundary_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BEB01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:UpperBoundary_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:UpperBoundary_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:UpperBoundary")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:UpperBoundaryFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:UpperBoundaryFO")
+{
+	field(DOL,  "$(P)Ch1:UpperBoundary.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:UpperBoundaryRaw.VAL")
+	field(FLNK, "$(P)Ch1:UpperBoundaryRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:UpperBoundaryRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BEB01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:UpperBoundary_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BEB02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:UpperBoundary_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:UpperBoundary_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:UpperBoundary")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:UpperBoundaryFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:UpperBoundaryFO")
+{
+	field(DOL,  "$(P)Ch2:UpperBoundary.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:UpperBoundaryRaw.VAL")
+	field(FLNK, "$(P)Ch2:UpperBoundaryRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:UpperBoundaryRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BEB02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:LowerBoundary_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BEA01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:LowerBoundary_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:LowerBoundary_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:LowerBoundary")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:LowerBoundaryFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:LowerBoundaryFO")
+{
+	field(DOL,  "$(P)Ch1:LowerBoundary.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:LowerBoundaryRaw.VAL")
+	field(FLNK, "$(P)Ch1:LowerBoundaryRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:LowerBoundaryRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BEA01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:LowerBoundary_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0BEA02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:LowerBoundary_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:LowerBoundary_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:LowerBoundary")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:LowerBoundaryFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:LowerBoundaryFO")
+{
+	field(DOL,  "$(P)Ch2:LowerBoundary.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:LowerBoundaryRaw.VAL")
+	field(FLNK, "$(P)Ch2:LowerBoundaryRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:LowerBoundaryRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0BEA02) $(PORT)")
+}
+
+# Tab: Object Temperature
+record(ai, "$(P)Ch1:TempOffset_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FA101) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TempOffset_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TempOffset_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:TempOffset")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch1:TempOffsetFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:TempOffsetFO")
+{
+	field(DOL,  "$(P)Ch1:TempOffset.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:TempOffsetRaw.VAL")
+	field(FLNK, "$(P)Ch1:TempOffsetRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:TempOffsetRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FA101) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:TempOffset_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FA102) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TempOffset_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TempOffset_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:TempOffset")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch2:TempOffsetFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:TempOffsetFO")
+{
+	field(DOL,  "$(P)Ch2:TempOffset.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:TempOffsetRaw.VAL")
+	field(FLNK, "$(P)Ch2:TempOffsetRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:TempOffsetRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FA102) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:TempGain_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FA201) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TempGain_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TempGain_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:TempGain")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch1:TempGainFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:TempGainFO")
+{
+	field(DOL,  "$(P)Ch1:TempGain.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:TempGainRaw.VAL")
+	field(FLNK, "$(P)Ch1:TempGainRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:TempGainRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FA201) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:TempGain_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FA202) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TempGain_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TempGain_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:TempGain")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch2:TempGainFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:TempGainFO")
+{
+	field(DOL,  "$(P)Ch2:TempGain.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:TempGainRaw.VAL")
+	field(FLNK, "$(P)Ch2:TempGainRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:TempGainRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FA202) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:UpperErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FAB01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:UpperErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:UpperErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:UpperErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:UpperErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:UpperErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch1:UpperErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:UpperErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch1:UpperErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:UpperErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FAB01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:UpperErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FAB02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:UpperErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:UpperErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:UpperErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:UpperErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:UpperErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch2:UpperErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:UpperErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch2:UpperErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:UpperErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FAB02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:LowerErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FAA01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:LowerErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:LowerErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:LowerErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:LowerErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:LowerErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch1:LowerErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:LowerErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch1:LowerErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:LowerErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FAA01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:LowerErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FAA02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:LowerErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:LowerErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:LowerErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:LowerErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:LowerErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch2:LowerErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:LowerErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch2:LowerErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:LowerErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FAA02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:MaxTempChange_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FAC01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:MaxTempChange_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:MaxTempChange_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:MaxTempChange")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "1")
+	field(FLNK, "$(P)Ch1:MaxTempChangeFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:MaxTempChangeFO")
+{
+	field(DOL,  "$(P)Ch1:MaxTempChange.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:MaxTempChangeRaw.VAL")
+	field(FLNK, "$(P)Ch1:MaxTempChangeRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:MaxTempChangeRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FAC01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:MaxTempChange_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FAC02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:MaxTempChange_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:MaxTempChange_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:MaxTempChange")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "1")
+	field(FLNK, "$(P)Ch2:MaxTempChangeFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:MaxTempChangeFO")
+{
+	field(DOL,  "$(P)Ch2:MaxTempChange.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:MaxTempChangeRaw.VAL")
+	field(FLNK, "$(P)Ch2:MaxTempChangeRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:MaxTempChangeRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FAC02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:TemperatureDeviation_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC801) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TemperatureDeviation_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TemperatureDeviation_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:TemperatureDeviation")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "50")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:TemperatureDeviationFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:TemperatureDeviationFO")
+{
+	field(DOL,  "$(P)Ch1:TemperatureDeviation.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:TemperatureDeviationRaw.VAL")
+	field(FLNK, "$(P)Ch1:TemperatureDeviationRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:TemperatureDeviationRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FC801) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:TemperatureDeviation_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC802) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TemperatureDeviation_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TemperatureDeviation_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:TemperatureDeviation")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "50")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:TemperatureDeviationFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:TemperatureDeviationFO")
+{
+	field(DOL,  "$(P)Ch2:TemperatureDeviation.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:TemperatureDeviationRaw.VAL")
+	field(FLNK, "$(P)Ch2:TemperatureDeviationRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:TemperatureDeviationRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FC802) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:MinTimeInWindow_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC901) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:MinTimeInWindow_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:MinTimeInWindow_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:MinTimeInWindow")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "86400")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:MinTimeInWindowFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:MinTimeInWindowFO")
+{
+	field(DOL,  "$(P)Ch1:MinTimeInWindow.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:MinTimeInWindowRaw.VAL")
+	field(FLNK, "$(P)Ch1:MinTimeInWindowRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:MinTimeInWindowRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FC901) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:MinTimeInWindow_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC902) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:MinTimeInWindow_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:MinTimeInWindow_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:MinTimeInWindow")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "86400")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:MinTimeInWindowFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:MinTimeInWindowFO")
+{
+	field(DOL,  "$(P)Ch2:MinTimeInWindow.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:MinTimeInWindowRaw.VAL")
+	field(FLNK, "$(P)Ch2:MinTimeInWindowRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:MinTimeInWindowRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FC902) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:MaxStabilizationTime_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FCA01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:MaxStabilizationTime_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:MaxStabilizationTime_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:MaxStabilizationTime")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "86400")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch1:MaxStabilizationTimeFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:MaxStabilizationTimeFO")
+{
+	field(DOL,  "$(P)Ch1:MaxStabilizationTime.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:MaxStabilizationTimeRaw.VAL")
+	field(FLNK, "$(P)Ch1:MaxStabilizationTimeRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:MaxStabilizationTimeRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FCA01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:MaxStabilizationTime_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FCA02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:MaxStabilizationTime_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:MaxStabilizationTime_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:MaxStabilizationTime")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "s")
+	field(HOPR, "86400")
+	field(LOPR, "0")
+	field(FLNK, "$(P)Ch2:MaxStabilizationTimeFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:MaxStabilizationTimeFO")
+{
+	field(DOL,  "$(P)Ch2:MaxStabilizationTime.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:MaxStabilizationTimeRaw.VAL")
+	field(FLNK, "$(P)Ch2:MaxStabilizationTimeRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:MaxStabilizationTimeRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),0FCA02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:HighestVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC301) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:HighestVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:HighestVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:HighestVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC302) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:HighestVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:HighestVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:LowestVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC401) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:LowestVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:LowestVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:LowestVoltage_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC402) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:LowestVoltage_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:LowestVoltage_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:LowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FBE01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:LowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:LowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:LowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FBE02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:LowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:LowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:HighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FBF01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:HighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:HighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:HighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FBF02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:HighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:HighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TempAtLowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC001) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TempAtLowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TempAtLowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TempAtLowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC002) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TempAtLowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TempAtLowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TempAtHighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC101) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TempAtHighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TempAtHighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TempAtHighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),0FC102) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TempAtHighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TempAtHighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(mbbi, "$(P)Ch1:ObjectSensorType_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),0FC201) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Unknown Type")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "PT100")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "PT1000")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "NTC18K")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "NTC39K")
+	field(FRSV, "NO_ALARM")
+	field(FVVL, "5")
+	field(FVST, "NTC56K")
+	field(FVSV, "NO_ALARM")
+	field(SXVL, "6")
+	field(SXST, "NTC1M")
+	field(SXSV, "NO_ALARM")
+	field(SVVL, "7")
+	field(SVST, "VIN1")
+	field(SVSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbi, "$(P)Ch2:ObjectSensorType_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),0FC202) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Unknown Type")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "PT100")
+	field(ONSV, "NO_ALARM")
+	field(TWVL, "2")
+	field(TWST, "PT1000")
+	field(TWSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "NTC18K")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "NTC39K")
+	field(FRSV, "NO_ALARM")
+	field(FVVL, "5")
+	field(FVST, "NTC56K")
+	field(FVSV, "NO_ALARM")
+	field(SXVL, "6")
+	field(SXST, "NTC1M")
+	field(SXSV, "NO_ALARM")
+	field(SVVL, "7")
+	field(SVST, "VIN1")
+	field(SVSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+# Tab: Sink Temperature Measurement
+
+record(ai, "$(P)Ch1:SinkTempOffset_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),138901) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkTempOffset_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkTempOffset_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SinkTempOffset")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch1:SinkTempOffsetFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SinkTempOffsetFO")
+{
+	field(DOL,  "$(P)Ch1:SinkTempOffset.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SinkTempOffsetRaw.VAL")
+	field(FLNK, "$(P)Ch1:SinkTempOffsetRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SinkTempOffsetRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),138901) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SinkTempOffset_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),138902) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkTempOffset_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkTempOffset_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SinkTempOffset")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch2:SinkTempOffsetFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SinkTempOffsetFO")
+{
+	field(DOL,  "$(P)Ch2:SinkTempOffset.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SinkTempOffsetRaw.VAL")
+	field(FLNK, "$(P)Ch2:SinkTempOffsetRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SinkTempOffsetRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),138902) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:SinkTempGain_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),138A01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkTempGain_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkTempGain_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SinkTempGain")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch1:SinkTempGainFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SinkTempGainFO")
+{
+	field(DOL,  "$(P)Ch1:SinkTempGain.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SinkTempGainRaw.VAL")
+	field(FLNK, "$(P)Ch1:SinkTempGainRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SinkTempGainRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),138A01) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SinkTempGain_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),138A02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkTempGain_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkTempGain_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SinkTempGain")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "1e4")
+	field(LOPR, "-1e4")
+	field(FLNK, "$(P)Ch2:SinkTempGainFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SinkTempGainFO")
+{
+	field(DOL,  "$(P)Ch2:SinkTempGain.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SinkTempGainRaw.VAL")
+	field(FLNK, "$(P)Ch2:SinkTempGainRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SinkTempGainRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),138A02) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:SinkUpperErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),139301) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkUpperErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkUpperErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SinkUpperErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:SinkUpperErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SinkUpperErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch1:SinkUpperErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SinkUpperErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch1:SinkUpperErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SinkUpperErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),139301) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SinkUpperErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),139302) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkUpperErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkUpperErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SinkUpperErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:SinkUpperErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SinkUpperErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch2:SinkUpperErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SinkUpperErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch2:SinkUpperErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SinkUpperErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),139302) $(PORT)")
+}
+
+record(ai, "$(P)Ch1:SinkLowerErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),139201) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkLowerErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkLowerErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SinkLowerErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:SinkLowerErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SinkLowerErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch1:SinkLowerErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SinkLowerErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch1:SinkLowerErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SinkLowerErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),139201) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SinkLowerErrorThreshold_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),139202) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkLowerErrorThreshold_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkLowerErrorThreshold_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SinkLowerErrorThreshold")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:SinkLowerErrorThresholdFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SinkLowerErrorThresholdFO")
+{
+	field(DOL,  "$(P)Ch2:SinkLowerErrorThreshold.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SinkLowerErrorThresholdRaw.VAL")
+	field(FLNK, "$(P)Ch2:SinkLowerErrorThresholdRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SinkLowerErrorThresholdRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),139202) $(PORT)")
+	field(PREC, "3")
+	field(EGU,  "C")
+}
+
+record(ai, "$(P)Ch1:SinkMaxTempChange_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),139401) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkMaxTempChange_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkMaxTempChange_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SinkMaxTempChange")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "1")
+	field(FLNK, "$(P)Ch1:SinkMaxTempChangeFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SinkMaxTempChangeFO")
+{
+	field(DOL,  "$(P)Ch1:SinkMaxTempChange.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SinkMaxTempChangeRaw.VAL")
+	field(FLNK, "$(P)Ch1:SinkMaxTempChangeRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SinkMaxTempChangeRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),139401) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SinkMaxTempChange_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),139402) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkMaxTempChange_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkMaxTempChange_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SinkMaxTempChange")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(HOPR, "200")
+	field(LOPR, "1")
+	field(FLNK, "$(P)Ch2:SinkMaxTempChangeFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SinkMaxTempChangeFO")
+{
+	field(DOL,  "$(P)Ch2:SinkMaxTempChange.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SinkMaxTempChangeRaw.VAL")
+	field(FLNK, "$(P)Ch2:SinkMaxTempChangeRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SinkMaxTempChangeRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),139402) $(PORT)")
+}
+
+record(mbbi, "$(P)Ch1:SinkTempSelection_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),13A601) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "External")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Fixed Value")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:SinkTempSelection")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),13A601) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "External")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Fixed Value")
+	field(ONSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:SinkTempSelection_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),13A602) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "External")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Fixed Value")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:SinkTempSelection")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),13A602) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "External")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Fixed Value")
+	field(ONSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch1:SinkFixedTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13A701) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkFixedTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkFixedTemp_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch1:SinkFixedTemp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch1:SinkFixedTempFO.VAL")
+}
+
+record(dfanout, "$(P)Ch1:SinkFixedTempFO")
+{
+	field(DOL,  "$(P)Ch1:SinkFixedTemp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch1:SinkFixedTempRaw.VAL")
+	field(FLNK, "$(P)Ch1:SinkFixedTempRaw.VAL")
+}
+
+record(ao, "$(P)Ch1:SinkFixedTempRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),13A701) $(PORT)")
+}
+
+record(ai, "$(P)Ch2:SinkFixedTemp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13A702) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkFixedTemp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkFixedTemp_RBVRaw.VAL CP NMS")
+}
+
+record(sub, "$(P)Ch2:SinkFixedTemp")
+{
+	field(SNAM, "floatToInt")
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(EGU,  "C")
+	field(FLNK, "$(P)Ch2:SinkFixedTempFO.VAL")
+}
+
+record(dfanout, "$(P)Ch2:SinkFixedTempFO")
+{
+	field(DOL,  "$(P)Ch2:SinkFixedTemp.A")
+	field(OMSL, "1")
+	field(OUTA, "$(P)Ch2:SinkFixedTempRaw.VAL")
+	field(FLNK, "$(P)Ch2:SinkFixedTempRaw.VAL")
+}
+
+record(ao, "$(P)Ch2:SinkFixedTempRaw")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),13A702) $(PORT)")
+}
+
+record(mbbi, "$(P)Ch1:SinkUpperADCLimitError_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),13A801) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Enabled")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Disabled")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:SinkUpperADCLimitError")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),13A801) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Enabled")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Disabled")
+	field(ONSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:SinkUpperADCLimitError_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),13A802) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Enabled")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Disabled")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:SinkUpperADCLimitError")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),13A802) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Enabled")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Disabled")
+	field(ONSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch1:SinkLowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B001) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+	
+record(sub, "$(P)Ch1:SinkLowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkLowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkLowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B002) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkLowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkLowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SinkHighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B101) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkHighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkHighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkHighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B102) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkHighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkHighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SinkTempAtLowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B201) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkTempAtLowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkTempAtLowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkTempAtLowestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B202) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkTempAtLowestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkTempAtLowestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SinkTempAtHighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B301) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SinkTempAtHighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SinkTempAtHighestResistance_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SinkTempAtHighestResistance_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),13B302) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SinkTempAtHighestResistance_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SinkTempAtHighestResistance_RBVRaw.VAL CP NMS")
+}
+
+# Tab: Autotune
+
+record(ao, "$(P)Ch1:AutoTuneStart")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),C73801) $(PORT)")
+	field(PREC, "3")
+}
+
+record(ao, "$(P)Ch1:AutoTuneCancel")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),C73901) $(PORT)")
+	field(PREC, "3")
+}
+
+record(mbbo, "$(P)Ch1:ThermalModelSpeed")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),C73A01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Fast Model")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Slow Model")
+	field(ONSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch1:TuningParam2A_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74201) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuningParam2A_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuningParam2A_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TuningParam2D_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74301) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuningParam2D_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuningParam2D_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TuningParamKu_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74401) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuningParamKu_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuningParamKu_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TuningParamTu_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74501) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuningParamTu_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuningParamTu_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:PIDParamKp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74601) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:PIDParamKp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:PIDParamKp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:PIDParamTi_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74701) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:PIDParamTi_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:PIDParamTi_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:PIDParamTd_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74801) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:PIDParamTd_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:PIDParamTd_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SlowPIParamKp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74E01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SlowPIParamKp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SlowPIParamKp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:SlowPIParamTi_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74F01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:SlowPIParamTi_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:SlowPIParamTi_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TunePIDDPartRamping_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C75001) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TunePIDDPartRamping_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TunePIDDPartRamping_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TuneCoarseTempRamp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74901) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuneCoarseTempRamp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuneCoarseTempRamp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch1:TuneProximityWidth_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74A01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuneProximityWidth_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuneProximityWidth_RBVRaw.VAL CP NMS")
+}
+
+record(mbbi, "$(P)Ch1:TuningStatus")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),C74C01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Idle")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Ramping to target temp...")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Preparing for acq...")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "Acquiring data...")
+	field(FRSV, "NO_ALARM")
+	field(FVVL, "5")
+	field(FVST, "Success! Tuning Complete")
+	field(FVSV, "NO_ALARM")
+	field(SXVL, "6")
+	field(SXST, "Error. Check Error Number")
+	field(SXSV, "MAJOR")
+	field(SCAN, "$(SCAN)")
+}
+
+
+record(ai, "$(P)Ch1:TuningProgress_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74D01) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch1:TuningProgress_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch1:TuningProgress_RBVRaw.VAL CP NMS")
+}
+
+record(ao, "$(P)Ch2:AutoTuneStart")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),C73802) $(PORT)")
+	field(PREC, "3")
+}
+
+record(ao, "$(P)Ch2:AutoTuneCancel")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),C73902) $(PORT)")
+	field(PREC, "3")
+}
+
+record(mbbo, "$(P)Ch2:ThermalModelSpeed")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),C73A02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Fast Model")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Slow Model")
+	field(ONSV, "NO_ALARM")
+}
+
+record(ai, "$(P)Ch2:TuningParam2A_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74202) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuningParam2A_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuningParam2A_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TuningParam2D_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74302) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuningParam2D_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuningParam2D_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TuningParamKu_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74402) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuningParamKu_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuningParamKu_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TuningParamTu_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74502) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuningParamTu_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuningParamTu_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:PIDParamKp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74602) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:PIDParamKp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:PIDParamKp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:PIDParamTi_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74702) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:PIDParamTi_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:PIDParamTi_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:PIDParamTd_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74802) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:PIDParamTd_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:PIDParamTd_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SlowPIParamKp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74E02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SlowPIParamKp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SlowPIParamKp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:SlowPIParamTi_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74F02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:SlowPIParamTi_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:SlowPIParamTi_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TunePIDDPartRamping_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C75002) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TunePIDDPartRamping_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TunePIDDPartRamping_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TuneCoarseTempRamp_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74902) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuneCoarseTempRamp_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuneCoarseTempRamp_RBVRaw.VAL CP NMS")
+}
+
+record(ai, "$(P)Ch2:TuneProximityWidth_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74A02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuneProximityWidth_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuneProximityWidth_RBVRaw.VAL CP NMS")
+}
+
+record(mbbi, "$(P)Ch2:TuningStatus")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),C74C02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Idle")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Ramping to target temp...")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Preparing for acq...")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "Acquiring data...")
+	field(FRSV, "NO_ALARM")
+	field(FVVL, "5")
+	field(FVST, "Success! Tuning Complete")
+	field(FVSV, "NO_ALARM")
+	field(SXVL, "6")
+	field(SXST, "Error. Check Error Number")
+	field(SXSV, "MAJOR")
+	field(SCAN, "$(SCAN)")
+}
+
+
+record(ai, "$(P)Ch2:TuningProgress_RBVRaw")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getFloatParam($(ADDR),C74D02) $(PORT)")
+	field(PREC, "3")
+	field(SCAN, "$(SCAN)")
+}
+
+record(sub, "$(P)Ch2:TuningProgress_RBV")
+{
+	field(SNAM, intToFloat)
+	field(SCAN, "Passive")
+	field(PREC, "3")
+	field(INPA, "$(P)Ch2:TuningProgress_RBVRaw.VAL CP NMS")
+}
+
+# Tab: Advanced: Temp Conversion
+
+record(mbbi, "$(P)Ch1:SensorTypeSelection_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),177501) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "NTC")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Pt100")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Pt1000")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "Voltage")
+	field(FRSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:SensorTypeSelection")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),177501) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "NTC")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Pt100")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Pt1000")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "Voltage")
+	field(FRSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:SensorTypeSelection_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),177502) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "NTC")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Pt100")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Pt1000")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "Voltage")
+	field(FRSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:SensorTypeSelection")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),177502) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "NTC")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Pt100")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "Pt1000")
+	field(THSV, "NO_ALARM")
+	field(FRVL, "4")
+	field(FRST, "Voltage")
+	field(FRSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch1:ControlSpeed_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),189D01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "10 Hz")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "80 Hz")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "1 Hz")
+	field(THSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch1:ControlSpeed")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),189D01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "10 Hz")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "80 Hz")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "1 Hz")
+	field(THSV, "NO_ALARM")
+}
+
+record(mbbi, "$(P)Ch2:ControlSpeed_RBV")
+{
+	field(DTYP, "stream")
+	field(INP,  "@meer.proto getIntParam($(ADDR),189D02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "10 Hz")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "80 Hz")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "1 Hz")
+	field(THSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbo, "$(P)Ch2:ControlSpeed")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),189D02) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "10 Hz")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "80 Hz")
+	field(ONSV, "NO_ALARM")
+	field(THVL, "3")
+	field(THST, "1 Hz")
+	field(THSV, "NO_ALARM")
+}
+
+
+record(mbbo, "$(P)SaveFlash")
+{
+	field(DTYP, "stream")
+	field(OUT,  "@meer.proto setIntParam($(ADDR),006C01) $(PORT)")
+	field(ZRVL, "0")
+	field(ZRST, "Enabled")
+	field(ZRSV, "NO_ALARM")
+	field(ONVL, "1")
+	field(ONST, "Disabled")
+	field(ONSV, "NO_ALARM")
+	field(SCAN, "$(SCAN)")
+}
+
